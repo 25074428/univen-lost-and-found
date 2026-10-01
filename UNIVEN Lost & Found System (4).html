@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>University of Venda - Lost & Found Portal</title>
+  <style>
+    :root {
+      --univen-navy: #0A192F;
+      --univen-navy-dark: #060F1E;
+      --univen-navy-card: rgba(10, 25, 47, 0.90);
+      --univen-gold: #D4AF37;
+      --univen-gold-hover: #B59223;
+      --univen-maroon: #800020;
+      --univen-maroon-hover: #600018;
+      --bg-color: #030712;
+      --text-light: #F8FAFC;
+      --text-muted: #94A3B8;
+      --border-color: rgba(212, 175, 55, 0.35);
+      --input-bg: #0F172A;
+      --success-green: #22C55E;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      color: var(--text-light);
+      padding: 1.25rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      min-height: 100vh;
+      
+      /* UNIVEN Dark Background Overlay with Watermark Pattern */
+      background-color: var(--bg-color);
+      background-image: 
+        radial-gradient(circle at center, rgba(10, 25, 47, 0.82) 0%, rgba(3, 7, 18, 0.96) 100%),
+        url('314284.png'),
+        url('https://www.univen.ac.za/wp-content/uploads/2022/01/univen-logo.png');
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-attachment: fixed;
+      background-size: min(520px, 85vw) auto;
+    }
+
+    header.portal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, var(--univen-navy) 0%, var(--univen-navy-dark) 100%);
+      padding: 1.25rem 1.75rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      border-bottom: 4px solid var(--univen-gold);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7);
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .logo-badge {
+      width: 58px;
+      height: 58px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid var(--univen-gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
+    }
+
+    .logo-badge img {
+      width: 85%;
+      height: 85%;
+      object-fit: contain;
+    }
+
+    .brand-title h1 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #FFFFFF;
+      text-transform: uppercase;
+    }
+
+    .brand-title span {
+      color: var(--univen-gold);
+      font-size: 0.85rem;
+      display: block;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      margin-top: 2px;
+    }
+
+    .auth-status-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .admin-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.9rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .admin-indicator.logged-out {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .admin-indicator.logged-in {
+      background: rgba(34, 197, 94, 0.2);
+      color: #4ADE80;
+      border: 1px solid #22C55E;
+    }
+
+    .btn-auth {
+      background: var(--univen-gold);
+      color: var(--univen-navy-dark);
+      border: none;
+      padding: 0.55rem 1.15rem;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+    }
+
+    .btn-auth:hover {
+      background: var(--univen-gold-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-logout {
+      background: var(--univen-maroon);
+      color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(128, 0, 32, 0.4);
+    }
+
+    .btn-logout:hover {
+      background: var(--univen-maroon-hover);
+    }
+
+    .announcement-banner {
+      background: rgba(128, 0, 32, 0.25);
+      border: 1px solid var(--univen-maroon);
+      border-left: 4px solid var(--univen-gold);
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: #FCE7F3;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: var(--univen-navy-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+
+    .stat-info h4 {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-info .stat-number {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--univen-gold);
+    }
+
+    .stat-icon {
+      font-size: 1.75rem;
+      opacity: 0.8;
+    }
+
+    .app-grid {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 992px) {
+      .app-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--univen-navy-card);
+      backdrop-filter: blur(10px);
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+    }
+
+    .card h2 {
+      color: var(--univen-gold);
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.6rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+      font-size: 0.825rem;
+      color: #E2E8F0;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.65rem 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      font-size: 0.875rem;
+      background-color: var(--input-bg);
+      color: var(--text-light);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--univen-gold);
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
+    }
+
+    .error-msg {
+      color: #F87171;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-top: 0.25rem;
+      display: block;
+      min-height: 1.2em;
+    }
+
+    input.invalid-input {
+      border-color: var(--univen-maroon) !important;
+      background-color: rgba(128, 0, 32, 0.2) !important;
+    }
+
+    input.valid-input {
+      border-color: var(--success-green) !important;
+      background-color: rgba(34, 197, 94, 0.1) !important;
+    }
+
+    .image-preview-box {
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .image-preview-box img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-remove-img {
+      background: var(--univen-maroon);
+      color: white;
+      border: none;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, var(--univen-gold) 0%, var(--univen-gold-hover) 100%);
+      color: var(--univen-navy-dark);
+      border: none;
+      padding: 0.75rem;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 0.925rem;
+      cursor: pointer;
+      width: 100%;
+      transition: transform 0.15s ease, filter 0.15s ease;
+      margin-top: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25);
+    }
+
+    .btn-submit:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    .controls-bar {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .controls-bar input[type="text"] {
+      flex: 2;
+      min-width: 180px;
+    }
+
+    .controls-bar select {
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .btn-export {
+      background: rgba(212, 175, 55, 0.15);
+      color: var(--univen-gold);
+      border: 1px solid var(--univen-gold);
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-export:hover {
+      background: var(--univen-gold);
+      color: var(--univen-navy-dark);
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+      background: var(--univen-navy-card);
+      backdrop-filter: blur(10px);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+
+    th {
+      background: rgba(6, 15, 30, 0.95);
+      color: var(--univen-gold);
+      font-weight: 700;
+      padding: 0.85rem;
+      border-bottom: 2px solid var(--border-color);
+      white-space: nowrap;
+      text-transform: uppercase;
+      font-size: 0.725rem;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 0.75rem 0.85rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      vertical-align: middle;
+    }
+
+    tr:hover {
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    .table-thumb {
+      width: 42px;
+      height: 42px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .table-thumb:hover {
+      transform: scale(1.25);
+    }
+
+    .no-img-placeholder {
+      display: inline-block;
+      width: 42px;
+      height: 42px;
+      line-height: 42px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+    }
+
+    .badge {
+      padding: 0.25rem 0.55rem;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: inline-block;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .badge-active {
+      background: rgba(212, 175, 55, 0.15);
+      color: var(--univen-gold);
+      border: 1px solid var(--univen-gold);
+    }
+
+    .badge-claimed {
+      background: rgba(148, 163, 184, 0.15);
+      color: var(--text-muted);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+    }
+
+    .badge-type-lost {
+      background: rgba(239, 68, 68, 0.15);
+      color: #F87171;
+      border: 1px solid #EF4444;
+      padding: 0.2rem 0.45rem;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.7rem;
+    }
+
+    .badge-type-found {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ADE80;
+      border: 1px solid #22C55E;
+      padding: 0.2rem 0.45rem;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.7rem;
+    }
+
+    .btn-claim {
+      background: var(--univen-gold);
+      color: var(--univen-navy-dark);
+      border: none;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 800;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-claim:hover {
+      background: var(--univen-gold-hover);
+    }
+
+    .btn-restricted {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      border: 1px dashed rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-restricted:hover {
+      background: rgba(212, 175, 55, 0.2);
+      color: var(--univen-gold);
+      border-style: solid;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(3, 7, 18, 0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+      backdrop-filter: blur(6px);
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-card {
+      background: var(--univen-navy-dark);
+      padding: 2rem;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      border: 1px solid var(--border-color);
+      border-top: 5px solid var(--univen-gold);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+      transform: translateY(-10px);
+      transition: transform 0.25s ease;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: translateY(0);
+    }
+
+    .modal-card h3 {
+      color: var(--univen-gold);
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-card p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+
+    .btn-cancel {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-light);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .btn-cancel:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="portal-header">
+    <div class="brand-title">
+      <div class="logo-badge">
+        <img src="314284.png" alt="UNIVEN Emblem" onerror="this.src='https://www.univen.ac.za/wp-content/uploads/2022/01/univen-logo.png'">
+      </div>
+      <div>
+        <h1>UNIVERSITY OF VENDA</h1>
+        <span>Lost & Found Campus Portal • Creating Future Leaders</span>
+      </div>
+    </div>
+    <div class="auth-status-container">
+      <span id="adminBadge" class="admin-indicator logged-out">🔒 Student / Guest View</span>
+      <button id="authBtn" class="btn-auth" onclick="handleAuthButtonClick()">Admin Login</button>
+    </div>
+  </header>
+
+  <div class="announcement-banner">
+    <span>📢 <strong>Notice to UNIVEN Students:</strong> Please ensure your 8-digit Student ID (e.g., 22014892) is accurately entered when submitting reports. Found items can be turned in directly to Security Services or Campus Library Desk.</span>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-info">
+        <h4>Active Lost Items</h4>
+        <div class="stat-number" id="statLostCount">0</div>
+      </div>
+      <div class="stat-icon">🔍</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-info">
+        <h4>Active Found Items</h4>
+        <div class="stat-number" id="statFoundCount">0</div>
+      </div>
+      <div class="stat-icon">📦</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-info">
+        <h4>Claimed Items</h4>
+        <div class="stat-number" id="statClaimedCount">0</div>
+      </div>
+      <div class="stat-icon">✅</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-info">
+        <h4>Total Registered</h4>
+        <div class="stat-number" id="statTotalCount">0</div>
+      </div>
+      <div class="stat-icon">📊</div>
+    </div>
+  </div>
+
+  <div class="app-grid">
+    <!-- Left Column: Report Submission Form -->
+    <div class="card">
+      <h2>📝 Report Lost or Found Item</h2>
+      <form id="reportForm">
+        <div class="form-group">
+          <label for="type">Report Type *</label>
+          <select id="type" required>
+            <option value="Lost">Lost Item (Looking for item)</option>
+            <option value="Found">Found Item (Turned in/Spotted)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="studentId">UNIVEN Student ID (8 Digits) *</label>
+          <input 
+            type="text" 
+            id="studentId" 
+            placeholder="e.g. 22014892" 
+            maxlength="8" 
+            required
+            oninput="validateStudentIdInput(this)"
+          >
+          <small id="studentIdError" class="error-msg"></small>
+        </div>
+
+        <div class="form-group">
+          <label for="name">Item Name & Description *</label>
+          <input type="text" id="name" placeholder="e.g. Black Jansport Backpack" required>
+        </div>
+
+        <div class="form-group">
+          <label for="category">Category *</label>
+          <select id="category" required>
+            <option value="Bags">Bags & Backpacks</option>
+            <option value="Electronics">Electronics & Gadgets</option>
+            <option value="Keys">Keys & Lanyards</option>
+            <option value="Stationery">Books & Stationery</option>
+            <option value="ID Cards">Student ID Cards</option>
+            <option value="Clothing">Clothing & Accessories</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="location">Campus Location *</label>
+          <input type="text" id="location" placeholder="e.g. UNIVEN Library, Student Union, Science Bldg" required>
+        </div>
+
+        <div class="form-group">
+          <label for="date">Date *</label>
+          <input type="date" id="date" required>
+        </div>
+
+        <div class="form-group">
+          <label for="contact">Reporter Contact Info *</label>
+          <input type="text" id="contact" placeholder="Email or Phone Number" required>
+        </div>
+
+        <div class="form-group">
+          <label for="itemImage">Photo Attachment (Optional)</label>
+          <input type="file" id="itemImage" accept="image/*" onchange="previewImage(this)">
+          <div id="imagePreviewContainer" class="image-preview-box" style="display: none;">
+            <img id="imagePreview" src="" alt="Preview">
+            <button type="button" class="btn-remove-img" onclick="removeImage()">Remove</button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">Submit UNIVEN Report</button>
+      </form>
+    </div>
+
+    <!-- Right Column: Live Data Feed and Filters -->
+    <div>
+      <div class="controls-bar">
+        <input 
+          type="text" 
+          id="searchInput" 
+          placeholder="Search lost backpacks, keys, student cards, locations..." 
+          oninput="renderItems()"
+        >
+        <select id="categoryFilter" onchange="renderItems()">
+          <option value="All">All Categories</option>
+          <option value="Bags">Bags & Backpacks</option>
+          <option value="Electronics">Electronics & Gadgets</option>
+          <option value="Keys">Keys & Lanyards</option>
+          <option value="Stationery">Books & Stationery</option>
+          <option value="ID Cards">Student ID Cards</option>
+          <option value="Clothing">Clothing & Accessories</option>
+          <option value="Other">Other</option>
+        </select>
+        <button type="button" class="btn-export" onclick="exportToCSV()">
+          📥 Export CSV
+        </button>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Photo</th>
+              <th>Student ID</th>
+              <th>Type</th>
+              <th>Item Description</th>
+              <th>Category</th>
+              <th>Campus Location</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="itemsTableBody">
+            <!-- Dynamic Rows rendered via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="adminModal" class="modal-overlay">
+    <div class="modal-card">
+      <h3>🔑 UNIVEN Admin Verification</h3>
+      <p>Enter administrative passcode to mark items as claimed or manage campus records.</p>
+      <div class="form-group">
+        <label for="passcode">Security Passcode</label>
+        <input type="password" id="passcode" placeholder="Default passcode: univen2026">
+        <small id="modalError" class="error-msg"></small>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeAdminModal()">Cancel</button>
+        <button class="btn-auth" onclick="submitAdminLogin()">Login as Admin</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let isAdmin = false;
+    let pendingClaimId = null;
+    let currentBase64Image = "";
+
+    // Realistic UNIVEN Student Seed Data
+    const defaultItems = [
+      {
+        id: 1,
+        studentId: "22014892",
+        type: "Lost",
+        name: "Black Jansport Backpack",
+        category: "Bags",
+        location: "UNIVEN Library - 2nd Floor Study Area",
+        date: "2026-09-28",
+        contact: "22014892@mvula.univen.ac.za",
+        status: "Active",
+        image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=150&auto=format&fit=crop&q=60"
+      },
+      {
+        id: 2,
+        studentId: "21008912",
+        type: "Found",
+        name: "Silver House Keys & UNIVEN Lanyard",
+        category: "Keys",
+        location: "Student Union Cafeteria",
+        date: "2026-09-29",
+        contact: "campus.security@univen.ac.za",
+        status: "Claimed",
+        image: "https://images.unsplash.com/photo-1582142839970-2b93220b2230?w=150&auto=format&fit=crop&q=60"
+      },
+      {
+        id: 3,
+        studentId: "23001422",
+        type: "Lost",
+        name: "Calculus & Physics Lecture Notebook",
+        category: "Stationery",
+        location: "Natural Sciences Building 102",
+        date: "2026-09-30",
+        contact: "0812345678",
+        status: "Active",
+        image: ""
+      },
+      {
+        id: 4,
+        studentId: "20019284",
+        type: "Found",
+        name: "Wireless Bluetooth Earbuds (Black Case)",
+        category: "Electronics",
+        location: "Engineering Quad Bench",
+        date: "2026-10-01",
+        contact: "0829876543",
+        status: "Active",
+        image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=150&auto=format&fit=crop&q=60"
+      },
+      {
+        id: 5,
+        studentId: "24009115",
+        type: "Found",
+        name: "UNIVEN Student Card - N. Mudau",
+        category: "ID Cards",
+        location: "Main Administration Gate",
+        date: "2026-10-01",
+        contact: "security.gate1@univen.ac.za",
+        status: "Active",
+        image: ""
+      }
+    ];
+
+    // Load from localStorage or initialize defaults
+    let items = JSON.parse(localStorage.getItem('univen_lost_found_db')) || defaultItems;
+
+    function saveData() {
+      localStorage.setItem('univen_lost_found_db', JSON.stringify(items));
+      updateStats();
+    }
+
+    function getNextId() {
+      if (items.length === 0) return 1;
+      return Math.max(...items.map(i => i.id)) + 1;
+    }
+
+    function updateStats() {
+      const activeLost = items.filter(i => i.type === 'Lost' && i.status === 'Active').length;
+      const activeFound = items.filter(i => i.type === 'Found' && i.status === 'Active').length;
+      const claimed = items.filter(i => i.status === 'Claimed').length;
+
+      document.getElementById('statLostCount').textContent = activeLost;
+      document.getElementById('statFoundCount').textContent = activeFound;
+      document.getElementById('statClaimedCount').textContent = claimed;
+      document.getElementById('statTotalCount').textContent = items.length;
+    }
+
+    // Set today's date in form field
+    document.getElementById('date').value = new Date().toISOString().split('T')[0];
+
+    function handleAuthButtonClick() {
+      if (isAdmin) {
+        isAdmin = false;
+        updateAuthUI();
+        renderItems();
+      } else {
+        openAdminModal();
+      }
+    }
+
+    function openAdminModal(triggerClaimId = null) {
+      pendingClaimId = triggerClaimId;
+      document.getElementById('passcode').value = "";
+      document.getElementById('modalError').textContent = "";
+      document.getElementById('adminModal').classList.add('active');
+      document.getElementById('passcode').focus();
+    }
+
+    function closeAdminModal() {
+      document.getElementById('adminModal').classList.remove('active');
+      pendingClaimId = null;
+    }
+
+    function submitAdminLogin() {
+      const inputPasscode = document.getElementById('passcode').value;
+      if (inputPasscode === 'univen2026' || inputPasscode === 'admin123') {
+        isAdmin = true;
+        updateAuthUI();
+        closeAdminModal();
+
+        if (pendingClaimId !== null) {
+          executeClaim(pendingClaimId);
+          pendingClaimId = null;
+        } else {
+          renderItems();
+        }
+      } else {
+        document.getElementById('modalError').textContent = "Incorrect passcode. Try 'univen2026'.";
+      }
+    }
+
+    function updateAuthUI() {
+      const badge = document.getElementById('adminBadge');
+      const btn = document.getElementById('authBtn');
+
+      if (isAdmin) {
+        badge.className = "admin-indicator logged-in";
+        badge.textContent = "🔓 Admin Mode Active";
+        btn.textContent = "Logout Admin";
+        btn.className = "btn-auth btn-logout";
+      } else {
+        badge.className = "admin-indicator logged-out";
+        badge.textContent = "🔒 Student / Guest View";
+        btn.textContent = "Admin Login";
+        btn.className = "btn-auth";
+      }
+    }
+
+    function validateStudentIdInput(input) {
+      const errorElement = document.getElementById('studentIdError');
+      const studentIdPattern = /^[0-9]{8}$/;
+
+      // Remove non-digit characters automatically
+      input.value = input.value.replace(/[^0-9]/g, '');
+
+      if (input.value.length === 0) {
+        errorElement.textContent = 'Student ID is required.';
+        input.classList.remove('valid-input', 'invalid-input');
+        return false;
+      } else if (!studentIdPattern.test(input.value)) {
+        errorElement.textContent = 'Must be exactly 8 numeric digits.';
+        input.classList.add('invalid-input');
+        input.classList.remove('valid-input');
+        return false;
+      } else {
+        errorElement.textContent = '';
+        input.classList.add('valid-input');
+        input.classList.remove('invalid-input');
+        return true;
+      }
+    }
+
+    function previewImage(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      if (file.size > 2 * 1024 * 1024) {
+        alert("File size exceeds 2MB limit.");
+        input.value = "";
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        currentBase64Image = e.target.result;
+        document.getElementById('imagePreview').src = currentBase64Image;
+        document.getElementById('imagePreviewContainer').style.display = 'flex';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeImage() {
+      currentBase64Image = "";
+      document.getElementById('itemImage').value = "";
+      document.getElementById('imagePreviewContainer').style.display = 'none';
+    }
+
+    document.getElementById('reportForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const studentIdInput = document.getElementById('studentId');
+      if (!validateStudentIdInput(studentIdInput)) {
+        studentIdInput.focus();
+        return;
+      }
+
+      const newItem = {
+        id: getNextId(),
+        studentId: studentIdInput.value,
+        type: document.getElementById('type').value,
+        name: document.getElementById('name').value,
+        category: document.getElementById('category').value,
+        location: document.getElementById('location').value,
+        date: document.getElementById('date').value,
+        contact: document.getElementById('contact').value,
+        image: currentBase64Image,
+        status: 'Active'
+      };
+
+      items.unshift(newItem);
+      saveData();
+      renderItems();
+
+      // Reset form fields
+      e.target.reset();
+      removeImage();
+      studentIdInput.classList.remove('valid-input', 'invalid-input');
+      document.getElementById('date').value = new Date().toISOString().split('T')[0];
+    });
+
+    function handleClaimClick(id) {
+      if (isAdmin) {
+        executeClaim(id);
+      } else {
+        openAdminModal(id);
+      }
+    }
+
+    function executeClaim(id) {
+      const item = items.find(i => i.id === id);
+      if (item) {
+        item.status = 'Claimed';
+        saveData();
+        renderItems();
+      }
+    }
+
+    function renderItems() {
+      const keyword = document.getElementById('searchInput').value.toLowerCase().trim();
+      const selectedCategory = document.getElementById('categoryFilter').value;
+      const tbody = document.getElementById('itemsTableBody');
+
+      tbody.innerHTML = '';
+
+      const filtered = items.filter(item => {
+        const matchesKeyword = 
+          item.name.toLowerCase().includes(keyword) || 
+          item.location.toLowerCase().includes(keyword) ||
+          (item.studentId && item.studentId.includes(keyword));
+
+        const matchesCategory = 
+          selectedCategory === 'All' || 
+          item.category.toLowerCase() === selectedCategory.toLowerCase();
+
+        return matchesKeyword && matchesCategory;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="10" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+              No matching records found for UNIVEN campus.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const row = document.createElement('tr');
+
+        const imageCell = item.image 
+          ? `<img src="${item.image}" alt="${item.name}" class="table-thumb" onclick="window.open('${item.image}')">`
+          : `<span class="no-img-placeholder">N/A</span>`;
+
+        const typeBadge = item.type === 'Lost' 
+          ? `<span class="badge-type-lost">Lost</span>`
+          : `<span class="badge-type-found">Found</span>`;
+
+        let actionCell = '—';
+        if (item.status === 'Active') {
+          if (isAdmin) {
+            actionCell = `<button class="btn-claim" onclick="handleClaimClick(${item.id})">Mark Claimed</button>`;
+          } else {
+            actionCell = `<button class="btn-claim btn-restricted" onclick="handleClaimClick(${item.id})" title="Admin Authentication Required">🔒 Claim</button>`;
+          }
+        }
+
+        row.innerHTML = `
+          <td>${item.id}</td>
+          <td>${imageCell}</td>
+          <td><strong>${item.studentId || 'N/A'}</strong></td>
+          <td>${typeBadge}</td>
+          <td><strong>${item.name}</strong></td>
+          <td>${item.category}</td>
+          <td>${item.location}</td>
+          <td>${item.date}</td>
+          <td><span class="badge ${item.status === 'Active' ? 'badge-active' : 'badge-claimed'}">${item.status}</span></td>
+          <td>${actionCell}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function exportToCSV() {
+      if (items.length === 0) {
+        alert("No records available to export.");
+        return;
+      }
+
+      const headers = ["ID", "Student ID", "Type", "Name", "Category", "Location", "Date", "Contact", "Status"];
+
+      const rows = items.map(item => [
+        item.id,
+        `"${(item.studentId || '').replace(/"/g, '""')}"`,
+        `"${(item.type || '').replace(/"/g, '""')}"`,
+        `"${(item.name || '').replace(/"/g, '""')}"`,
+        `"${(item.category || '').replace(/"/g, '""')}"`,
+        `"${(item.location || '').replace(/"/g, '""')}"`,
+        `"${(item.date || '').replace(/"/g, '""')}"`,
+        `"${(item.contact || '').replace(/"/g, '""')}"`,
+        `"${(item.status || '').replace(/"/g, '""')}"`
+      ]);
+
+      const csvContent = [
+        headers.join(","),
+        ...rows.map(e => e.join(","))
+      ].join("\n");
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      
+      const dateStr = new Date().toISOString().split('T')[0];
+      link.setAttribute("download", `UNIVEN_Lost_Found_${dateStr}.csv`);
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+
+    // Initial startup
+    updateStats();
+    renderItems();
+  </script>
+</body>
+</html>
